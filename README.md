@@ -32,7 +32,7 @@ androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", 
 
 ```
 
-Then In You ``` build.gradle.kts(Module :app) ``` File.
+Then In Your ``` build.gradle.kts(Module :app) ``` File.
 
 ```
 // For Paging Runtime
@@ -54,7 +54,7 @@ implementation(libs.androidx.paging.compose)
 Paging Source is just a class.
 ```
 class NewsListPagingSource(
-    private val query: Query,
+    private val newsQuery: Query,
 ) : PagingSource<QuerySnapshot, NewsModel>() {
 
     override fun getRefreshKey(state: PagingState<QuerySnapshot, NewsModel>): QuerySnapshot? {
@@ -67,13 +67,13 @@ class NewsListPagingSource(
             delay(2000)
 
             // when the Last Item is null then we are getting the starting list
-            val currentPage = params.key ?: query.get().await()
+            val currentPage = params.key ?: newsQuery.get().await()
 
             // Last Visible Document
             val lastVisiblePage = currentPage.documents[currentPage.size() - 1]
 
              // Next Item after the Last Item
-            val nextPage = query.startAfter(lastVisiblePage).get().await()
+            val nextPage = newsQuery.startAfter(lastVisiblePage).get().await()
 
 
             return LoadResult.Page(
@@ -124,7 +124,7 @@ class NewsRepositoryImpl(
 
     // References
     override val newsColRef: CollectionReference?
-        get() = firestore.collection(FirestoreNodes.NEWS_COL)
+        get() = firestore.collection("News")
 
 
     // News
@@ -143,7 +143,7 @@ class NewsRepositoryImpl(
                     query!! // !! is for Non Null Query
                 )
             }
-        ).flow // We Get the flow that we want
+        ).flow // We Get the flow that we Need
 
     }
 
