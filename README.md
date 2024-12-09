@@ -148,3 +148,32 @@ class NewsRepositoryImpl(
 }
 
 ```
+
+### 3. ViewModel Part
+
+```
+class NewsViewModel(
+    private val newsRepository: NewsRepository,
+) : ViewModel() {
+
+    private val _newsList = MutableStateFlow<PagingData<NewsModel>>(PagingData.empty())
+    val newsList: StateFlow<PagingData<NewsModel>> = _newsList
+
+    init {
+        getNewsList()
+    }
+
+    fun getNewsList() {
+        viewModelScope.launch {
+            newsRepository
+                .getNewsList()
+                .cachedIn(this)
+                .collectLatest { pagingData ->
+                    _newsList.value = pagingData
+                }
+        }
+    }
+
+}
+
+```
