@@ -91,3 +91,56 @@ class NewsListPagingSource(
 }
 
 ```
+
+### 2. Repository Part
+
+In the Repository Interface
+
+```
+interface NewsRepository {
+
+    // References
+    val newsColRef: CollectionReference? // News Collection Refference
+
+    // News
+    fun getNewsList(): Flow<PagingData<NewsModel>> // This Returns the FLow of Paging Data of NewsModel
+
+}
+
+```
+
+In Repository Implementation
+
+```
+class NewsRepositoryImpl(
+    private val firestore: FirebaseFirestore,
+) : NewsRepository {
+
+    // References
+    override val newsColRef: CollectionReference?
+        get() = firestore.collection(FirestoreNodes.NEWS_COL)
+
+
+    // News
+    override fun getNewsList(category: String?): Flow<PagingData<NewsModel>> {
+
+        val query = newsColRef
+            ?.orderBy("timestamp", Query.Direction.DESCENDING)
+            ?.limit(10)
+
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+            ),
+            pagingSourceFactory = {
+                NewsListPagingSource(
+                    query!! // !! is for Non Null Query
+                )
+            }
+        ).flow // We Get the flow that we want
+
+    }
+
+}
+
+```
