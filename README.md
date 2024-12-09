@@ -96,6 +96,8 @@ class NewsListPagingSource(
 
 ```
 
+
+
 ### 2. Repository Part
 
 In the Repository Interface
@@ -149,6 +151,9 @@ class NewsRepositoryImpl(
 
 ```
 
+
+
+
 ### 3. ViewModel Part
 
 ```
@@ -171,6 +176,45 @@ class NewsViewModel(
                 .collectLatest { pagingData ->
                     _newsList.value = pagingData
                 }
+        }
+    }
+
+}
+
+```
+
+
+
+### 4. UI Part
+
+```
+
+@Composable
+fun NewsListScreen(
+    newsViewModel: NewsViewModel = koinViewModel()  // Best Practice is using Dependency Injection, like koin or dagger hilt
+) {
+
+    val newsList = newsViewModel.newsList.collectAsLazyPagingItems()
+
+    Scafold(
+        modifier =  Modifier
+            .fillMaxSize()
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paaddingValues = innerPadding)
+        ) {
+            items(
+                count = newsList.itemCount,
+                key = newsList.itemKey {
+                    it.newsId ?: "
+                }
+            ) { index ->
+                val item = newsList[index]
+
+                NewsItem(item = item)
+            }
         }
     }
 
