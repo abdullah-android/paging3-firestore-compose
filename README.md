@@ -172,7 +172,7 @@ class NewsViewModel(
         viewModelScope.launch {
             newsRepository
                 .getNewsList()
-                .cachedIn(this)
+                .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _newsList.value = pagingData
                 }
