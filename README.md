@@ -66,11 +66,14 @@ class NewsListPagingSource(
 
             delay(2000)
 
-            val currentPage = params.key ?: query.get().await() // when the Last Item is null then we are getting the starting list
+            // when the Last Item is null then we are getting the starting list
+            val currentPage = params.key ?: query.get().await()
 
-            val lastVisiblePage = currentPage.documents[currentPage.size() - 1] // Last Visible Document
+            // Last Visible Document
+            val lastVisiblePage = currentPage.documents[currentPage.size() - 1]
 
-            val nextPage = query.startAfter(lastVisiblePage).get().await() // Next Item after the Last Item
+             // Next Item after the Last Item
+            val nextPage = query.startAfter(lastVisiblePage).get().await()
 
 
             return LoadResult.Page(
@@ -82,7 +85,8 @@ class NewsListPagingSource(
             )
 
         } catch (e: FirebaseFirestoreException) {
-            LoadResult.Error(Throwable("Failed To load more news. May be cause of Internet!")) // Catching FirebaseFirestore Exception is Optional
+            // Catching FirebaseFirestore Exception is Optional
+            LoadResult.Error(Throwable("Failed To load more news. May be cause of Internet!")) 
         } catch (e: Exception) {
             return LoadResult.Error(e)
         }
@@ -99,11 +103,11 @@ In the Repository Interface
 ```
 interface NewsRepository {
 
-    // References
-    val newsColRef: CollectionReference? // News Collection Refference
+    // News Collection Refference
+    val newsColRef: CollectionReference? 
 
-    // News
-    fun getNewsList(): Flow<PagingData<NewsModel>> // This Returns the FLow of Paging Data of NewsModel
+    // This Returns the Flow of Paging Data of NewsModel, NewsModel is a data class
+    fun getNewsList(): Flow<PagingData<NewsModel>> 
 
 }
 
