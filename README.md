@@ -42,3 +42,52 @@ implementation(libs.androidx.paging.runtime.ktx)
 implementation(libs.androidx.paging.compose)
 
 ```
+
+## Steps
+
+1. Creating Paging Source.
+2. Repository Part.
+3. ViewModel Part.
+4. UI Part.
+
+### 1. Paging Source
+Paging Source is just a class.
+```
+class NewsListPagingSource(
+    private val query: Query,
+) : PagingSource<QuerySnapshot, NewsModel>() {
+
+    override fun getRefreshKey(state: PagingState<QuerySnapshot, NewsModel>): QuerySnapshot? {
+        return null
+    }
+
+    override suspend fun load(params: LoadParams<QuerySnapshot>): LoadResult<QuerySnapshot, NewsModel> {
+        return try {
+
+            delay(2000)
+
+            val currentPage = params.key ?: query.get().await() // when the Last Item is null then we are getting the starting list
+
+            val lastVisiblePage = currentPage.documents[currentPage.size() - 1] // Last Visible Document
+
+            val nextPage = query.startAfter(lastVisiblePage).get().await() // Next Item after the Last Item
+
+
+            return LoadResult.Page(
+                data = currentPage.map {
+                  it.toObject(NewsModel::class.java)
+                },
+                prevKey = null,
+                nextKey = nextPage,
+            )
+
+        } catch (e: FirebaseFirestoreException) {
+            LoadResult.Error(Throwable("Failed To load more news. May be cause of Internet!")) // Catching FirebaseFirestore Exception is Optional
+        } catch (e: Exception) {
+            return LoadResult.Error(e)
+        }
+    }
+
+}
+
+```
