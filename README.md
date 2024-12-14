@@ -196,7 +196,7 @@ fun NewsListScreen(
 
     val newsList = newsViewModel.newsList.collectAsLazyPagingItems()
 
-    Scafold(
+    Scaffold(
         modifier =  Modifier
             .fillMaxSize()
     ) { innerPadding ->
